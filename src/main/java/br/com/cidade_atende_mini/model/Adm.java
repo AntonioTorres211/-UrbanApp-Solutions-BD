@@ -1,8 +1,5 @@
 package br.com.cidade_atende_mini.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-
 public class Adm {
     
     private String user;
