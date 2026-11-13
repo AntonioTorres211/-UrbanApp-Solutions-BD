@@ -1,272 +1,89 @@
+
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Solicitações de serviço</title>
-  <link rel="stylesheet" href="../static/css/style.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  
 </head>
 <body>
+
   <header class="topo">
     <h1>Solicitações de serviço</h1>
     <p>Registre, acompanhe e conclua pedidos por bairro.</p>
   </header>
 
   <main class="conteudo">
+
     <section class="painel" aria-labelledby="titulo-form">
       <h2 id="titulo-form">Nova solicitação</h2>
-      <form id="form-nova" novalidate>
+
+      <form id="form-nova"
+            th:action="@{/solicitacoes}"
+            method="post">
+
         <div class="campo">
-          <label for="categoria">Categoria</label>
-          <select id="categoria" required>
+          <label for="select_categoria">Categoria</label>
+
+          <select id="select_categoria" name="categoria" required>
             <option value="">Selecione</option>
-            <option>Iluminação</option>
-            <option>Limpeza urbana</option>
-            <option>Buraco na via</option>
-            <option>Água e esgoto</option>
-            <option>Outros</option>
+            <option value="Iluminação">Iluminação</option>
+            <option value="Limpeza urbana">Limpeza urbana</option>
+            <option value="Buraco na via">Buraco na via</option>
+            <option value="Água e esgoto">Água e esgoto</option>
+            <option value="Outros">Outros</option>
           </select>
         </div>
 
         <div class="campo">
-          <label for="bairro">Bairro</label>
-          <input id="bairro" type="text" required>
+          <label for="txt_bairro">Bairro</label>
+          <input id="txt_bairro"
+                 name="bairro"
+                 type="text"
+                 required>
         </div>
 
         <div class="campo">
-          <label for="descricao">Descrição</label>
-          <textarea id="descricao" rows="3" required></textarea>
+          <label for="txt_descricao">Descrição</label>
+          <textarea id="txt_descricao"
+                    name="descricao"
+                    rows="3"
+                    required></textarea>
         </div>
 
         <div class="campo campo-curto">
-          <label for="prioridade">Prioridade (1 a 5)</label>
-          <input id="prioridade" type="number" min="1" max="5" step="1" required>
+          <label for="input_prioridade">Prioridade (1 a 5)</label>
+          <input id="input_prioridade"
+                 name="prioridade"
+                 type="number"
+                 min="1"
+                 max="5"
+                 step="1"
+                 required>
         </div>
 
         <p id="erro-nova" class="erro" role="alert" hidden></p>
-        <button type="submit" class="botao">Cadastrar solicitação</button>
+
+        <button id="btn_cadastrar"
+                type="submit"
+                class="botao">
+          Cadastrar solicitação
+        </button>
+
       </form>
     </section>
 
     <section class="painel" aria-labelledby="titulo-lista">
       <h2 id="titulo-lista">Solicitações</h2>
-      <p id="vazio" class="vazio">Nenhuma solicitação cadastrada. Preencha o formulário para criar a primeira.</p>
-      <ul id="lista" class="lista"></ul>
+
+      <p id="vazio" class="vazio">
+        Nenhuma solicitação cadastrada.
+        Preencha o formulário para criar a primeira.
+      </p>
     </section>
+
   </main>
-
-  <script>
-    // Dados mantidos apenas em memória (sem JSON, sem armazenamento).
-    var solicitacoes = [];
-    var proximoId = 1;
-
-    // RF03: única transição permitida a partir de cada status.
-    var PROXIMO = {
-      "Aberta": "Em atendimento",
-      "Em atendimento": "Concluída"
-    };
-
-    var form = document.getElementById("form-nova");
-    var erroNova = document.getElementById("erro-nova");
-    var lista = document.getElementById("lista");
-    var vazio = document.getElementById("vazio");
-
-    function agora() {
-      return new Date().toLocaleString("pt-BR");
-    }
-
-    function criar(tag, classe, texto) {
-      var e = document.createElement(tag);
-      if (classe) e.className = classe;
-      if (texto !== undefined) e.textContent = texto;
-      return e;
-    }
-
-    function registrar(s, texto) {
-      s.historico.push({ quando: agora(), texto: texto });
-    }
-
-    // RF01 e RF02
-    form.addEventListener("submit", function (ev) {
-      ev.preventDefault();
-      var categoria = document.getElementById("categoria").value.trim();
-      var bairro = document.getElementById("bairro").value.trim();
-      var descricao = document.getElementById("descricao").value.trim();
-      var bruto = document.getElementById("prioridade").value.trim();
-      var prioridade = Number(bruto);
-
-      if (!categoria || !bairro || !descricao || !bruto) {
-        return mostrarErro("Preencha categoria, bairro, descrição e prioridade.");
-      }
-      if (!/^[1-5]$/.test(bruto) || !Number.isInteger(prioridade)) {
-        return mostrarErro("A prioridade deve ser um número inteiro de 1 a 5.");
-      }
-
-      var s = {
-        id: proximoId++,
-        categoria: categoria,
-        bairro: bairro,
-        descricao: descricao,
-        prioridade: prioridade,
-        status: "Aberta",
-        reaberturas: 0,
-        solucao: "",
-        atendente: "",
-        historico: []
-      };
-      registrar(s, "Solicitação criada com status Aberta.");
-      solicitacoes.unshift(s);
-      form.reset();
-      mostrarErro("");
-      desenhar();
-    });
-
-    function mostrarErro(msg) {
-      erroNova.textContent = msg;
-      erroNova.hidden = !msg;
-    }
-
-    // RF03: avança uma etapa por vez.
-    function avancar(s) {
-      var destino = PROXIMO[s.status];
-      if (!destino || destino === "Concluída") return;
-      registrar(s, "Status alterado de " + s.status + " para " + destino + ".");
-      s.status = destino;
-      desenhar();
-    }
-
-    // RF05: conclusão exige solução e atendente.
-    function concluir(s, solucao, atendente, aviso) {
-      solucao = solucao.trim();
-      atendente = atendente.trim();
-      if (s.status !== "Em atendimento") return;
-      if (!solucao || !atendente) {
-        aviso.textContent = "Informe o texto da solução e o atendente para concluir.";
-        aviso.hidden = false;
-        return;
-      }
-      s.solucao = solucao;
-      s.atendente = atendente;
-      registrar(s, "Concluída por " + atendente + ". Solução: " + solucao);
-      s.status = "Concluída";
-      desenhar();
-    }
-
-    // RF06: reabre, preserva histórico e soma 1 ao contador.
-    function reabrir(s) {
-      if (s.status !== "Concluída") return;
-      s.reaberturas += 1;
-      registrar(s, "Reaberta (reabertura nº " + s.reaberturas + "). Status voltou para Aberta.");
-      s.status = "Aberta";
-      s.solucao = "";
-      s.atendente = "";
-      desenhar();
-    }
-
-    function desenhar() {
-      lista.textContent = "";
-      vazio.hidden = solicitacoes.length > 0;
-
-      solicitacoes.forEach(function (s) {
-        var critica = s.prioridade === 5; // RF04
-        var item = criar("li", "cartao" + (critica ? " critica" : ""));
-
-        var cab = criar("div", "cartao-topo");
-        cab.appendChild(criar("h3", "", "#" + s.id + " · " + s.categoria));
-        var selos = criar("div", "selos");
-        if (critica) selos.appendChild(criar("span", "selo selo-critica", "Crítica"));
-        var status = criar("span", "selo selo-status status-" + s.status.replace(/\s|ç|í/g, function (c) {
-          return c === " " ? "-" : c === "ç" ? "c" : "i";
-        }).toLowerCase(), s.status);
-        selos.appendChild(status);
-        cab.appendChild(selos);
-        item.appendChild(cab);
-
-        item.appendChild(criar("p", "descricao", s.descricao));
-
-        var meta = criar("dl", "meta");
-        [["Bairro", s.bairro], ["Prioridade", String(s.prioridade)], ["Reaberturas", String(s.reaberturas)]].forEach(function (par) {
-          var bloco = criar("div");
-          bloco.appendChild(criar("dt", "", par[0]));
-          bloco.appendChild(criar("dd", "", par[1]));
-          meta.appendChild(bloco);
-        });
-        item.appendChild(meta);
-
-        if (s.status === "Concluída") {
-          var sol = criar("div", "solucao");
-          sol.appendChild(criar("p", "", "Solução: " + s.solucao));
-          sol.appendChild(criar("p", "", "Atendente: " + s.atendente));
-          item.appendChild(sol);
-        }
-
-        var acoes = criar("div", "acoes");
-
-        if (s.status === "Aberta") {
-          var b1 = criar("button", "botao", "Iniciar atendimento");
-          b1.type = "button";
-          b1.addEventListener("click", function () { avancar(s); });
-          acoes.appendChild(b1);
-        }
-
-        if (s.status === "Em atendimento") {
-          var f = criar("form", "form-conclusao");
-          f.noValidate = true;
-          var c1 = criar("div", "campo");
-          var l1 = criar("label", "", "Solução aplicada");
-          l1.htmlFor = "solucao-" + s.id;
-          var t1 = criar("textarea");
-          t1.id = "solucao-" + s.id;
-          t1.rows = 2;
-          c1.appendChild(l1);
-          c1.appendChild(t1);
-          var c2 = criar("div", "campo");
-          var l2 = criar("label", "", "Atendente");
-          l2.htmlFor = "atendente-" + s.id;
-          var t2 = criar("input");
-          t2.type = "text";
-          t2.id = "atendente-" + s.id;
-          c2.appendChild(l2);
-          c2.appendChild(t2);
-          var aviso = criar("p", "erro");
-          aviso.setAttribute("role", "alert");
-          aviso.hidden = true;
-          var b2 = criar("button", "botao", "Concluir solicitação");
-          b2.type = "submit";
-          f.appendChild(c1);
-          f.appendChild(c2);
-          f.appendChild(aviso);
-          f.appendChild(b2);
-          f.addEventListener("submit", function (ev) {
-            ev.preventDefault();
-            concluir(s, t1.value, t2.value, aviso);
-          });
-          acoes.appendChild(f);
-        }
-
-        if (s.status === "Concluída") {
-          var b3 = criar("button", "botao botao-suave", "Reabrir solicitação");
-          b3.type = "button";
-          b3.addEventListener("click", function () { reabrir(s); });
-          acoes.appendChild(b3);
-        }
-
-        item.appendChild(acoes);
-
-        var det = criar("details", "historico");
-        det.appendChild(criar("summary", "", "Histórico (" + s.historico.length + ")"));
-        var ol = criar("ol");
-        s.historico.forEach(function (h) {
-          ol.appendChild(criar("li", "", h.quando + " — " + h.texto));
-        });
-        det.appendChild(ol);
-        item.appendChild(det);
-
-        lista.appendChild(item);
-      });
-    }
-
-    desenhar();
-  </script>
 </body>
 </html>
