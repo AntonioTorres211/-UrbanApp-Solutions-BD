@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UrbanApp Solutions | Serviços da cidade, do pedido à solução</title>
+  <meta name="description" content="A UrbanApp Solutions cria aplicativos para prefeituras: coleta seletiva, denúncias e solicitações de serviços municipais.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+
+  <link rel="stylesheet" th:href="@{/css/styleHome.css}">
+
+
+
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir para o conteúdo</a>
+
+  <header class="site-header" id="topo">
+    <div class="wrap header-in">
+      <a class="brand" href="#topo" aria-label="UrbanApp Solutions, início">
+        <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2c-5.5 0-10 4.3-10 9.7C6 19 16 30 16 30s10-11 10-18.300C26 6.300 21.500 2 16 2z" fill="#0c6e7a"/><circle cx="16" cy="12" r="4.200" fill="#f5b82e"/></svg>
+        <span>UrbanApp<small>Solutions</small></span>
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="nav">Menu</button>
+      <nav class="nav" id="nav" aria-label="Principal">
+        <a href="#servicos">O que fazemos</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#prefeituras">Para prefeituras</a>
+        <a href="#depoimentos">Depoimentos</a>
+        <a href="#contato">Contato</a>
+        <button class="link-btn nav-out" id="logoutNav" type="button" hidden>Sair</button>
+      </nav>
+      <div class="header-user">
+        <span class="hello" id="hello" hidden></span>
+        <button class="btn btn-sol" id="loginBtn" type="button"><span class="long">Entrar para solicitar</span><span class="short">Entrar</span></button>
+        <button class="link-btn" id="logoutBtn" type="button" hidden>Sair</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="hero">
+      <div class="wrap hero-in">
+        <div class="hero-text">
+          <h1>Cada pedido da cidade chega a quem pode resolver</h1>
+          <p class="lead">A UrbanApp Solutions cria aplicativos para prefeituras: coleta seletiva, denúncias e solicitações de serviços municipais. O cidadão abre o pedido e acompanha cada etapa até a solução.</p>
+          <div class="cta-row">
+            <button class="btn btn-sol btn-lg" type="button" data-open-login>Entrar e fazer uma solicitação</button>
+            <a class="btn btn-ghost btn-lg" href="#servicos">Conhecer os aplicativos</a>
+          </div>
+          <p class="hero-note">Do Rio de Janeiro, com 27 pessoas em 4 equipes de produto.</p>
+        </div>
+
+        <div class="demo" aria-label="Exemplo ilustrativo de solicitações no mapa">
+          <div class="map">
+            <svg viewBox="0 0 600 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="600" height="520" fill="#e8efe9"/>
+              <path d="M600 250 C520 260 470 330 480 400 C490 460 540 500 600 520 Z" fill="#b9dde4"/>
+              <path d="M0 520 C80 470 160 480 230 520 Z" fill="#b9dde4"/>
+              <ellipse cx="170" cy="140" rx="70" ry="46" fill="#cfe5cf"/>
+              <g stroke="#fff" stroke-width="16" stroke-linecap="round" fill="none">
+                <path d="M0 90 H600"/><path d="M0 250 H470"/><path d="M0 390 H420"/>
+                <path d="M110 0 V520"/><path d="M290 0 V420"/><path d="M450 0 V230"/>
+                <path d="M0 470 L300 140" stroke-width="10"/>
+              </g>
+              <g font-family="Public Sans, sans-serif" font-size="15" fill="#5a6b73" font-weight="600">
+                <text x="130" y="76">Tijuca</text><text x="312" y="236">Penha</text><text x="40" y="378">Botafogo</text>
+              </g>
+            </svg>
+            <button class="pin pin-5" style="left:22%;top:25%" data-i="0" aria-label="Buraco na via, Tijuca, prioridade 5"><span></span></button>
+            <button class="pin pin-3" style="left:63%;top:55%" data-i="1" aria-label="Coleta seletiva, Penha, prioridade 3"><span></span></button>
+            <button class="pin pin-2" style="left:27%;top:66%" data-i="2" aria-label="Poda de árvore, Botafogo, prioridade 2"><span></span></button>
+          </div>
+
+          <article class="ticket" id="ticket" aria-live="polite">
+            <div class="ticket-top">
+              <h2 id="tCat">Buraco na via</h2>
+              <span class="badge" id="tBadge">Crítica</span>
+            </div>
+            <p class="ticket-meta"><span id="tBairro">Tijuca</span>, prioridade <strong id="tPrio">5</strong> de 5</p>
+            <ol class="stepper" id="tSteps">
+              <li data-s="0">Aberta</li><li data-s="1">Em atendimento</li><li data-s="2">Concluída</li>
+            </ol>
+            <p class="ticket-extra" id="tExtra"></p>
+          </article>
+          <p class="demo-cap">Exemplo ilustrativo. Toque nos pontos do mapa.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="sec" id="servicos">
+      <div class="wrap two">
+        <div class="sec-head">
+          <h2>O que fazemos</h2>
+          <p>Somos 27 pessoas em 4 equipes de produto. Cada equipe cuida de um aplicativo usado por prefeituras e pelos moradores da cidade.</p>
+        </div>
+        <ul class="rows">
+          <li><h3>Coleta seletiva</h3><p>Organiza a coleta seletiva do município e aproxima quem separa o lixo de quem recolhe.</p></li>
+          <li><h3>Denúncias</h3><p>Um canal para o cidadão registrar problemas na cidade e ver para onde o caso foi encaminhado.</p></li>
+          <li><h3>Solicitações de serviços</h3><p>O CidadeAtende registra o pedido, define a prioridade de 1 a 5 e acompanha até a solução.</p></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="sec sec-tint" id="como-funciona">
+      <div class="wrap">
+        <div class="sec-head wide">
+          <h2>Como funciona uma solicitação</h2>
+          <p>Três etapas, sempre nesta ordem. Nenhuma é pulada.</p>
+        </div>
+        <ol class="steps">
+          <li><span class="n">1</span><h3>Aberta</h3><p>Você entra, informa a categoria, o bairro, a descrição e a prioridade de 1 a 5, e envia o pedido.</p></li>
+          <li><span class="n">2</span><h3>Em atendimento</h3><p>A prefeitura assume o caso. Pedidos de prioridade 5 aparecem em vermelho, como críticos.</p></li>
+          <li><span class="n">3</span><h3>Concluída</h3><p>O atendente registra a solução e se identifica. Você vê o que foi feito e quem fez.</p></li>
+        </ol>
+        <p class="aside">O problema voltou? A solicitação pode ser reaberta. O histórico fica guardado e o contador de reaberturas aumenta em 1.</p>
+      </div>
+    </section>
+
+    <section class="sec" id="prefeituras">
+      <div class="wrap two">
+        <div class="sec-head">
+          <h2>Para prefeituras</h2>
+          <p>Menos planilha e menos ligação para saber o que está parado. A equipe de atendimento começa o dia sabendo o que é mais urgente.</p>
+        </div>
+        <ul class="rows plain">
+          <li><h3>Fila por prioridade</h3><p>As solicitações chegam já com prioridade de 1 a 5, validada no cadastro.</p></li>
+          <li><h3>Críticas em destaque</h3><p>O que é prioridade 5 se destaca em vermelho para ninguém perder de vista.</p></li>
+          <li><h3>Solução registrada</h3><p>Texto da solução e identificação do atendente são exigidos para concluir.</p></li>
+          <li><h3>Reaberturas visíveis</h3><p>Quem volta a abrir um pedido concluído deixa rastro: histórico e contador.</p></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="sec sec-dark" id="depoimentos">
+      <div class="wrap">
+        <h2 class="on-dark">O que dizem quem usa</h2>
+        <div class="quotes">
+          <figure class="quote q-main">
+            <blockquote>“Mandei a foto do buraco numa terça e, na sexta, o aplicativo já mostrava a equipe em atendimento. Soube de cada etapa sem precisar ligar.”</blockquote>
+            <figcaption><strong>Marina Duarte</strong>moradora da Tijuca</figcaption>
+          </figure>
+          <figure class="quote">
+            <blockquote>“Antes eu separava as prioridades numa planilha. Agora as críticas aparecem em vermelho logo na abertura do dia.”</blockquote>
+            <figcaption><strong>Roberto Salles</strong>coordenador de Serviços Urbanos, prefeitura parceira</figcaption>
+          </figure>
+          <figure class="quote">
+            <blockquote>“Quando uma solicitação é reaberta, o histórico continua lá. Isso muda a conversa com o cidadão.”</blockquote>
+            <figcaption><strong>Paula Nogueira</strong>atendente da central de atendimento municipal</figcaption>
+          </figure>
+        </div>
+        <p class="fine">Depoimentos ilustrativos de pessoas fictícias, criados para este projeto acadêmico.</p>
+      </div>
+    </section>
+
+    <section class="sec cta-band">
+      <div class="wrap band-in">
+        <h2>Tem algo para resolver na sua rua?</h2>
+        <button class="btn btn-sol btn-lg" type="button" data-open-login>Entrar e fazer uma solicitação</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" id="contato">
+    <div class="wrap foot-in">
+      <div>
+        <p class="foot-brand">UrbanApp Solutions</p>
+        <p>Rio de Janeiro, RJ</p>
+        <p><a href="mailto:contato@urbanapp.example">contato@urbanapp.example</a></p>
+      </div>
+      <nav aria-label="Rodapé">
+        <a href="#servicos">O que fazemos</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#prefeituras">Para prefeituras</a>
+        <a href="https://github.com/AntonioTorres211/-UrbanApp-Solutions" target="_blank" rel="noopener">Repositório no GitHub</a>
+      </nav>
+      <p class="foot-fine">Empresa, depoimentos e dados fictícios, criados para o Projeto A3 de Garantia da Qualidade de Software (UNA, 2026/2). <span id="year"></span></p>
+    </div>
+  </footer>
+
+  <dialog class="login" id="loginDlg" aria-labelledby="loginTitle">
+    <form method="dialog" id="loginForm" novalidate>
+      <div class="dlg-top">
+        <h2 id="loginTitle">Entrar para fazer uma solicitação</h2>
+        <button class="x" type="button" id="closeDlg" aria-label="Fechar">×</button>
+      </div>
+      <label for="email">E-mail</label>
+      <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com">
+      <label for="senha">Senha</label>
+      <input id="senha" name="senha" type="password" autocomplete="current-password" placeholder="Mínimo de 6 caracteres">
+      <p class="err" id="loginErr" role="alert" hidden></p>
+      <button class="btn btn-mar btn-lg" type="submit">Entrar</button>
+      <p class="fine dark">Login de demonstração: nenhum dado é enviado ou guardado em servidor.</p>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script th:src="@{/js/script.js}"></script>
+
+</body>
+</html>
