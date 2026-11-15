@@ -1,89 +1,143 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Solicitações de serviço</title>
+  <title>Solicitações | UrbanApp Solutions</title>
+  <meta name="description" content="Cadastre e acompanhe solicitações de serviços urbanos.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/style.css}">
-  
 </head>
 <body>
+  <a class="skip" href="#conteudo">Ir para o conteúdo</a>
 
-  <header class="topo">
-    <h1>Solicitações de serviço</h1>
-    <p>Registre, acompanhe e conclua pedidos por bairro.</p>
+  <header class="site-header" id="topo">
+    <div class="wrap header-in">
+      <a class="brand" th:href="@{/}" aria-label="UrbanApp Solutions, início">
+        <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 2c-5.5 0-10 4.3-10 9.7C6 19 16 30 16 30s10-11 10-18.3C26 6.3 21.5 2 16 2z" fill="#0c6e7a"/>
+          <circle cx="16" cy="12" r="4.2" fill="#f5b82e"/>
+        </svg>
+        <span>UrbanApp<small>Solutions</small></span>
+      </a>
+      <nav class="form-nav" aria-label="Navegação">
+        <a th:href="@{/}">Voltar para início</a>
+      </nav>
+    </div>
   </header>
 
-  <main class="conteudo">
-
-    <section class="painel" aria-labelledby="titulo-form">
-      <h2 id="titulo-form">Nova solicitação</h2>
-
-      <form id="form-nova"
-            th:action="@{/solicitacoes}"
-            method="post">
-
-        <div class="campo">
-          <label for="select_categoria">Categoria</label>
-
-          <select id="select_categoria" name="categoria" required>
-            <option value="">Selecione</option>
-            <option value="Iluminação">Iluminação</option>
-            <option value="Limpeza urbana">Limpeza urbana</option>
-            <option value="Buraco na via">Buraco na via</option>
-            <option value="Água e esgoto">Água e esgoto</option>
-            <option value="Outros">Outros</option>
-          </select>
-        </div>
-
-        <div class="campo">
-          <label for="txt_bairro">Bairro</label>
-          <input id="txt_bairro"
-                 name="bairro"
-                 type="text"
-                 required>
-        </div>
-
-        <div class="campo">
-          <label for="txt_descricao">Descrição</label>
-          <textarea id="txt_descricao"
-                    name="descricao"
-                    rows="3"
-                    required></textarea>
-        </div>
-
-        <div class="campo campo-curto">
-          <label for="input_prioridade">Prioridade (1 a 5)</label>
-          <input id="input_prioridade"
-                 name="prioridade"
-                 type="number"
-                 min="1"
-                 max="5"
-                 step="1"
-                 required>
-        </div>
-
-        <p id="erro-nova" class="erro" role="alert" hidden></p>
-
-        <button id="btn_cadastrar"
-                type="submit"
-                class="botao">
-          cadastrar solicitação
-        </button>
-
-      </form>
+  <main id="conteudo">
+    <section class="hero form-hero">
+      <div class="wrap form-page-head">
+        <p class="form-eyebrow">CidadeAtende</p>
+        <h1>Solicitações de serviço</h1>
+        <p class="lead">Registre um problema da sua região e acompanhe as solicitações já cadastradas.</p>
+      </div>
     </section>
 
-    <section class="painel" aria-labelledby="titulo-lista">
-      <h2 id="titulo-lista">Solicitações</h2>
+    <section class="sec form-content">
+      <div class="wrap form-layout">
 
-      <p id="vazio" class="vazio">
-        Nenhuma solicitação cadastrada.
-        Preencha o formulário para criar a primeira.
-      </p>
+        <section class="form-panel" aria-labelledby="titulo-form">
+          <div class="panel-heading">
+            <span class="panel-kicker">Novo registro</span>
+            <h2 id="titulo-form">Nova solicitação</h2>
+            <p>Preencha os campos abaixo para encaminhar um pedido à prefeitura.</p>
+          </div>
+
+          <form id="form-nova" th:action="@{/solicitacoes}" method="post">
+            <div class="campo">
+              <label for="select_categoria">Categoria</label>
+              <select id="select_categoria" name="categoria" required>
+                <option value="">Selecione uma categoria</option>
+                <option value="Iluminação">Iluminação</option>
+                <option value="Limpeza urbana">Limpeza urbana</option>
+                <option value="Buraco na via">Buraco na via</option>
+                <option value="Água e esgoto">Água e esgoto</option>
+                <option value="Outros">Outros</option>
+              </select>
+            </div>
+
+            <div class="campo">
+              <label for="txt_bairro">Bairro</label>
+              <input id="txt_bairro" name="bairro" type="text" placeholder="Ex.: Centro" required>
+            </div>
+
+            <div class="campo">
+              <label for="txt_descricao">Descrição</label>
+              <textarea id="txt_descricao" name="descricao" rows="4"
+                        placeholder="Descreva o problema e, se possível, informe um ponto de referência." required></textarea>
+            </div>
+
+            <div class="campo campo-curto">
+              <label for="input_prioridade">Prioridade (1 a 5)</label>
+              <input id="input_prioridade" name="prioridade" type="number"
+                     min="1" max="5" step="1" placeholder="1 a 5" required>
+              <small>1 representa menor prioridade e 5 representa prioridade crítica.</small>
+            </div>
+
+            <p id="erro-nova" class="erro" role="alert" hidden></p>
+
+            <button id="btn_cadastrar" type="submit" class="btn btn-mar btn-lg form-submit">
+              Cadastrar solicitação
+            </button>
+          </form>
+        </section>
+
+        <section class="requests-panel" aria-labelledby="titulo-lista">
+          <div class="panel-heading requests-heading">
+            <div>
+              <span class="panel-kicker">Acompanhamento</span>
+              <h2 id="titulo-lista">Solicitações cadastradas</h2>
+              <p>Confira os pedidos registrados no sistema.</p>
+            </div>
+            <span class="requests-count" th:text="${#lists.size(solicitacoes)}">0</span>
+          </div>
+
+          <p id="vazio" class="vazio" th:if="${#lists.isEmpty(solicitacoes)}">
+            Nenhuma solicitação cadastrada.
+            <span>Preencha o formulário para criar a primeira.</span>
+          </p>
+
+          <div class="request-list" th:unless="${#lists.isEmpty(solicitacoes)}">
+            <article class="request-card" th:each="solicitacao : ${solicitacoes}">
+              <div class="request-card-top">
+                <h3 th:text="${solicitacao.titulo}">Categoria da solicitação</h3>
+                <span class="status-badge"
+                      th:text="${solicitacao.status}"
+                      th:classappend="${solicitacao.status == 'ABERTA'} ? ' status-open' : (${solicitacao.status == 'CONCLUIDA'} ? ' status-done' : ' status-progress')">
+                  ABERTA
+                </span>
+              </div>
+              <p class="request-description" th:text="${solicitacao.descricao}">Descrição do problema.</p>
+              <div class="request-meta">
+                <span><strong>Bairro:</strong> <span th:text="${solicitacao.endereco}">Centro</span></span>
+                <span><strong>Prioridade:</strong> <span th:text="${solicitacao.prioridade}">3</span>/5</span>
+              </div>
+              <div class="priority-track" aria-label="Prioridade da solicitação">
+                <span th:style="'width:' + (${solicitacao.prioridade} * 20) + '%'"></span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+      </div>
     </section>
-
   </main>
+
+  <footer class="site-footer">
+    <div class="wrap foot-in">
+      <div>
+        <p class="foot-brand">UrbanApp Solutions</p>
+        <p>CidadeAtende — Serviços urbanos</p>
+      </div>
+      <nav aria-label="Rodapé">
+        <a th:href="@{/}">Página inicial</a>
+      </nav>
+      <p class="foot-fine">Projeto acadêmico — UNA, 2026/2.</p>
+    </div>
+  </footer>
 </body>
 </html>

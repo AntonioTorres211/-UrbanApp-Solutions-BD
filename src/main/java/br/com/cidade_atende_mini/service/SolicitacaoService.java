@@ -4,7 +4,8 @@ package br.com.cidade_atende_mini.service;
 import br.com.cidade_atende_mini.dto.SolicitacaoDTO;
 import br.com.cidade_atende_mini.model.Solicitacao;
 import br.com.cidade_atende_mini.repository.SolicitacaoRepository;
-
+import br.com.cidade_atende_mini.model.Solicitacao;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -35,4 +36,9 @@ public class SolicitacaoService {
         // Persistência no banco de dados
         solicitacaoRepository.save(solicitacao);
     }
+
+    public List<Solicitacao> listarSolicitacoes() {
+    return solicitacaoRepository.findAll();
+    }
+
 }

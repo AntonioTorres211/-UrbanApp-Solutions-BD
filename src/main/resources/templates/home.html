@@ -192,7 +192,9 @@
       <label for="senha">Senha</label>
       <input id="senha" name="senha" type="password" autocomplete="current-password" placeholder="Mínimo de 6 caracteres">
       <p class="err" id="loginErr" role="alert" hidden></p>
-      <button class="btn btn-mar btn-lg" type="submit">Entrar</button>
+      <a th:href="@{/solicitacoes/nova}" class="btn btn-mar btn-lg">
+    Entrar
+      </a>
       <p class="fine dark">Login de demonstração: nenhum dado é enviado ou guardado em servidor.</p>
     </form>
   </dialog>
