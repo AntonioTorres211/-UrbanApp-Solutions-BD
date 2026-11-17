@@ -402,3 +402,20 @@ img,svg{max-width:100%}
         align-items: flex-start;
     }
 }
+
+.form-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto;
+}
+
+.request-user {
+    color: var(--tinta);
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.logout-form {
+    margin: 0;
+}

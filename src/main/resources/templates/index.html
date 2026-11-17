@@ -23,7 +23,11 @@
         <span>UrbanApp<small>Solutions</small></span>
       </a>
       <nav class="form-nav" aria-label="Navegação">
+        <span class="request-user" th:text="|Olá, ${nomeUsuario}|">Olá, usuário</span>
         <a th:href="@{/}">Voltar para início</a>
+        <form class="logout-form" th:action="@{/api/auth/logout}" method="post">
+          <button class="link-btn" type="submit">Sair</button>
+        </form>
       </nav>
     </div>
   </header>
@@ -107,7 +111,7 @@
                 <h3 th:text="${solicitacao.titulo}">Categoria da solicitação</h3>
                 <span class="status-badge"
                       th:text="${solicitacao.status}"
-                      th:classappend="${solicitacao.status == 'ABERTA'} ? ' status-open' : (${solicitacao.status == 'CONCLUIDA'} ? ' status-done' : ' status-progress')">
+                      th:classappend="${solicitacao.status == 'ABERTA'} ? ' status-open' : (${solicitacao.status == 'CONCLUIDA' or solicitacao.status == 'FECHADA'} ? ' status-done' : ' status-progress')">
                   ABERTA
                 </span>
               </div>

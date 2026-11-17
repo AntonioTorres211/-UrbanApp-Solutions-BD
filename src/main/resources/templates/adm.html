@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel administrativo | UrbanApp Solutions</title>
+  <meta name="description" content="Gerencie as solicitações de serviços urbanos.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <link rel="stylesheet" th:href="@{/css/styleAdmin.css}">
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir para o conteúdo</a>
+
+  <header class="site-header" id="topo">
+    <div class="wrap header-in">
+      <a class="brand" th:href="@{/}" aria-label="UrbanApp Solutions, início">
+        <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M16 2c-5.5 0-10 4.3-10 9.7C6 19 16 30 16 30s10-11 10-18.3C26 6.3 21.5 2 16 2z" fill="#0c6e7a"/>
+          <circle cx="16" cy="12" r="4.2" fill="#f5b82e"/>
+        </svg>
+        <span>UrbanApp<small>Solutions</small></span>
+      </a>
+      <nav class="form-nav" aria-label="Navegação">
+        <span class="request-user" th:text="|Olá, ${nomeUsuario}|">Olá, SuperUser</span>
+        <form class="logout-form" th:action="@{/api/auth/logout}" method="post">
+          <button class="link-btn" type="submit">Sair</button>
+        </form>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo">
+    <section class="admin-hero">
+      <div class="wrap admin-hero-content">
+        <p class="panel-kicker">Área administrativa</p>
+        <h1>Painel de solicitações</h1>
+        <p>Acompanhe solicitações abertas e fechadas e gerencie o atendimento da cidade.</p>
+      </div>
+    </section>
+
+    <section class="admin-content">
+      <div class="wrap admin-columns">
+        <section class="admin-column" aria-labelledby="abertas-title">
+          <div class="admin-column-heading">
+            <h2 id="abertas-title">
+              <span class="status-icon status-icon-open" aria-hidden="true">
+                <svg viewBox="0 0 20 20"><path d="m5 10 3.2 3.2L15.5 6" /></svg>
+              </span>
+              Abertas
+            </h2>
+            <span class="admin-column-count" th:text="${#lists.size(solicitacoesAbertas)}">0</span>
+          </div>
+
+          <div class="admin-empty" th:if="${#lists.isEmpty(solicitacoesAbertas)}">
+            <h3>Nenhuma solicitação aberta</h3>
+            <p>Novos pedidos aparecerão aqui.</p>
+          </div>
+
+          <div class="admin-list" th:unless="${#lists.isEmpty(solicitacoesAbertas)}">
+            <article class="admin-card" th:each="solicitacao : ${solicitacoesAbertas}">
+              <div class="admin-card-heading">
+                <div>
+                  <span class="admin-protocol" th:text="|Solicitação #${solicitacao.id}|">Solicitação #1</span>
+                  <h2 th:text="${solicitacao.titulo}">Categoria da solicitação</h2>
+                </div>
+                <span class="status-badge status-open">Aberta</span>
+              </div>
+
+              <p class="admin-description" th:text="${solicitacao.descricao}">Descrição do problema.</p>
+
+              <div class="admin-details">
+                <p><strong>Bairro:</strong> <span th:text="${solicitacao.endereco}">Centro</span></p>
+                <p><strong>Prioridade:</strong> <span th:text="${solicitacao.prioridade}">3</span>/5</p>
+              </div>
+
+              <div class="admin-actions">
+                <form th:action="@{/adm/solicitacoes/{id}/fechar(id=${solicitacao.id})}" method="post">
+                  <button class="btn btn-mar" type="submit">Fechar solicitação</button>
+                </form>
+                <form th:action="@{/adm/solicitacoes/{id}/excluir(id=${solicitacao.id})}" method="post"
+                      onsubmit="return confirm('Tem certeza de que deseja excluir esta solicitação?');">
+                  <button class="btn btn-delete" type="submit">Excluir</button>
+                </form>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="admin-column" aria-labelledby="fechadas-title">
+          <div class="admin-column-heading">
+            <h2 id="fechadas-title">
+              <span class="status-icon status-icon-closed" aria-hidden="true">
+                <svg viewBox="0 0 20 20"><path d="m6 6 8 8m0-8-8 8" /></svg>
+              </span>
+              Fechadas
+            </h2>
+            <span class="admin-column-count" th:text="${#lists.size(solicitacoesFechadas)}">0</span>
+          </div>
+
+          <div class="admin-empty" th:if="${#lists.isEmpty(solicitacoesFechadas)}">
+            <h3>Nenhuma solicitação fechada</h3>
+            <p>Solicitações fechadas aparecerão aqui.</p>
+          </div>
+
+          <div class="admin-list" th:unless="${#lists.isEmpty(solicitacoesFechadas)}">
+            <article class="admin-card" th:each="solicitacao : ${solicitacoesFechadas}">
+              <div class="admin-card-heading">
+                <div>
+                  <span class="admin-protocol" th:text="|Solicitação #${solicitacao.id}|">Solicitação #1</span>
+                  <h2 th:text="${solicitacao.titulo}">Categoria da solicitação</h2>
+                </div>
+                <span class="status-badge status-closed">Fechada</span>
+              </div>
+
+              <p class="admin-description" th:text="${solicitacao.descricao}">Descrição do problema.</p>
+
+              <div class="admin-details">
+                <p><strong>Bairro:</strong> <span th:text="${solicitacao.endereco}">Centro</span></p>
+                <p><strong>Prioridade:</strong> <span th:text="${solicitacao.prioridade}">3</span>/5</p>
+              </div>
+
+              <div class="admin-actions">
+                <form th:action="@{/adm/solicitacoes/{id}/excluir(id=${solicitacao.id})}" method="post"
+                      onsubmit="return confirm('Tem certeza de que deseja excluir esta solicitação?');">
+                  <button class="btn btn-delete" type="submit">Excluir</button>
+                </form>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap foot-in">
+      <p class="foot-brand">UrbanApp Solutions</p>
+      <p class="foot-fine">Painel administrativo — gerenciamento de solicitações.</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class SolicitacaoController {
@@ -21,10 +23,17 @@ public class SolicitacaoController {
 
     // Exibe o formulário e lista as solicitações
     @GetMapping("/solicitacoes/nova")
-    public String novaSolicitacao(Model model) {
+    public String novaSolicitacao(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Long usuarioId = usuarioIdAutenticado(session);
+        if (usuarioId == null) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("nomeUsuario", session.getAttribute("authenticatedName"));
         model.addAttribute(
             "solicitacoes",
-            solicitacaoService.listarSolicitacoes()
+            solicitacaoService.listarSolicitacoesDoUsuario(usuarioId)
         );
 
         return "index";
@@ -33,10 +42,23 @@ public class SolicitacaoController {
     // Recebe e cadastra uma nova solicitação
     @PostMapping("/solicitacoes")
     public String cadastrarSolicitacao(
-            @ModelAttribute SolicitacaoDTO solicitacaoDTO) {
+            @ModelAttribute SolicitacaoDTO solicitacaoDTO,
+            HttpServletRequest request) {
+        Long usuarioId = usuarioIdAutenticado(request.getSession(false));
+        if (usuarioId == null) {
+            return "redirect:/";
+        }
 
-        solicitacaoService.cadastrarSolicitacao(solicitacaoDTO);
+        solicitacaoService.cadastrarSolicitacao(solicitacaoDTO, usuarioId);
 
         return "redirect:/solicitacoes/nova";
+    }
+
+    private Long usuarioIdAutenticado(HttpSession session) {
+        if (session == null) {
+            return null;
+        }
+        Object usuarioId = session.getAttribute("authenticatedUserId");
+        return usuarioId instanceof Long id ? id : null;
     }
 }

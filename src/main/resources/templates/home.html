@@ -182,20 +182,26 @@
   </footer>
 
   <dialog class="login" id="loginDlg" aria-labelledby="loginTitle">
-    <form method="dialog" id="loginForm" novalidate>
+    <form id="loginForm" novalidate>
       <div class="dlg-top">
         <h2 id="loginTitle">Entrar para fazer uma solicitação</h2>
         <button class="x" type="button" id="closeDlg" aria-label="Fechar">×</button>
       </div>
       <label for="email">E-mail</label>
       <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com">
+      <div id="nameField" hidden>
+        <label for="nome">Nome</label>
+        <input id="nome" name="name" type="text" autocomplete="name" maxlength="100">
+      </div>
       <label for="senha">Senha</label>
-      <input id="senha" name="senha" type="password" autocomplete="current-password" placeholder="Mínimo de 6 caracteres">
-      <p class="err" id="loginErr" role="alert" hidden></p>
-      <a th:href="@{/solicitacoes/nova}" class="btn btn-mar btn-lg">
-    Entrar
-      </a>
-      <p class="fine dark">Login de demonstração: nenhum dado é enviado ou guardado em servidor.</p>
+      <input id="senha" name="password" type="password" autocomplete="current-password">
+      <p class="password-rules" id="passwordRules" hidden>
+        Mínimo de 8 caracteres, com uma letra maiúscula, uma minúscula e um caractere especial.
+        Não use espaços nem senhas comuns.
+      </p>
+      <button id="authSubmit" type="submit" class="btn btn-mar btn-lg">Entrar</button>
+      <button id="authToggle" type="button" class="auth-toggle">Ainda não tem uma conta? Cadastre-se</button>
+      <p class="fine dark" id="authHint">Use seu e-mail e sua senha cadastrados.</p>
     </form>
   </dialog>
 

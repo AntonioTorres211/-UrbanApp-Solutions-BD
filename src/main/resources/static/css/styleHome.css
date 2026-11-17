@@ -133,7 +133,11 @@ img,svg{max-width:100%}
 .login input.bad{border-color:var(--critico)}
 .err{color:var(--critico);font-size:.92rem;font-weight:500;margin:.8rem 0 0}
 .login .btn-mar{margin-top:1.2rem}
+.password-rules{margin:.65rem 0 0;color:#52646f;font-size:.86rem;line-height:1.5}
+.auth-toggle{display:block;margin:1rem auto 0;background:none;border:0;color:var(--mar);font:600 .92rem var(--corpo);cursor:pointer;text-decoration:underline}
 .toast{position:fixed;left:50%;bottom:1.5rem;transform:translateX(-50%);background:var(--tinta);color:#fff;padding:.8rem 1.3rem;border-radius:12px;z-index:90;box-shadow:0 12px 30px rgba(0,0,0,.35);max-width:calc(100% - 2rem)}
+.toast.success{background:#16794c}
+.toast.error{background:#b42318}
 
 /* Responsivo */
 .nav-out{display:none}

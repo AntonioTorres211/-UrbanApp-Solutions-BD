@@ -47,21 +47,27 @@
   });
   show(0);
 
-  /* ---------- Login de demonstração ---------- */
-  var dlg = $('#loginDlg'), form = $('#loginForm'), err = $('#loginErr');
+  /* ---------- Cadastro e login ---------- */
+  var dlg = $('#loginDlg'), form = $('#loginForm');
   var loginBtn = $('#loginBtn'), logoutBtn = $('#logoutBtn'), logoutNav = $('#logoutNav'), hello = $('#hello');
-  var email = $('#email'), senha = $('#senha');
-  var KEY = 'urbanapp_usuario';
-  var NEW_REQUEST_URL = 'solicitacao.html'; // próxima página do site (formulário de solicitação)
+  var email = $('#email'), senha = $('#senha'), nome = $('#nome');
+  var authToggle = $('#authToggle'), isRegistering = false;
+  var NEW_REQUEST_URL = '/solicitacoes/nova';
 
-  function readUser() { try { return sessionStorage.getItem(KEY); } catch (e) { return null; } }
-  function saveUser(v) { try { sessionStorage.setItem(KEY, v); } catch (e) {} }
-  function clearUser() { try { sessionStorage.removeItem(KEY); } catch (e) {} }
-
-  function toast(msg) {
-    var t = $('#toast'); t.textContent = msg; t.hidden = false;
+  function toast(msg, type) {
+    var t = $('#toast');
+    t.textContent = msg;
+    t.classList.remove('success', 'error');
+    if (type) t.classList.add(type);
+    t.hidden = false;
     clearTimeout(toast.id); toast.id = setTimeout(function () { t.hidden = true; }, 3600);
   }
+
+  function displayName(address) {
+    var name = address.split('@')[0].replace(/[._-]+/g, ' ');
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
   function setLoggedIn(name) {
     hello.textContent = 'Olá, ' + name; hello.hidden = false; logoutBtn.hidden = false; logoutNav.hidden = false;
     loginBtn.innerHTML = '<span class="long">Nova solicitação</span><span class="short">Solicitar</span>';
@@ -74,38 +80,104 @@
     delete loginBtn.dataset.logged;
     $$('[data-open-login]').forEach(function (b) { b.textContent = 'Entrar e fazer uma solicitação'; delete b.dataset.logged; });
   }
+
+  function setAuthMode(registering) {
+    isRegistering = registering;
+    $('#loginTitle').textContent = registering ? 'Criar uma conta' : 'Entrar para fazer uma solicitação';
+    $('#authSubmit').textContent = registering ? 'Cadastrar' : 'Entrar';
+    authToggle.textContent = registering ? 'Já tem uma conta? Entrar' : 'Ainda não tem uma conta? Cadastre-se';
+    $('#nameField').hidden = !registering;
+    nome.required = registering;
+    $('#passwordRules').hidden = !registering;
+    $('#authHint').textContent = registering
+      ? 'Sua senha será armazenada de forma protegida.'
+      : 'Use seu e-mail e sua senha cadastrados.';
+    senha.autocomplete = registering ? 'new-password' : 'current-password';
+    email.classList.remove('bad');
+    senha.classList.remove('bad');
+    nome.classList.remove('bad');
+  }
+
   function openOrGo(btn) {
     if (btn.dataset.logged) { window.location.href = NEW_REQUEST_URL; return; }
-    err.hidden = true; email.classList.remove('bad'); senha.classList.remove('bad');
+    setAuthMode(false);
     if (typeof dlg.showModal === 'function') dlg.showModal(); else dlg.setAttribute('open', '');
     email.focus();
   }
+
   [loginBtn].concat($$('[data-open-login]')).forEach(function (b) {
     b.addEventListener('click', function () { openOrGo(b); });
   });
+
   $('#closeDlg').addEventListener('click', function () { dlg.close(); });
-  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener('cancel', function (e) { e.preventDefault(); });
+  authToggle.addEventListener('click', function () { setAuthMode(!isRegistering); });
 
-  form.addEventListener('submit', function (e) {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    var em = email.value.trim(), pw = senha.value;
     email.classList.remove('bad'); senha.classList.remove('bad');
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
-      err.textContent = 'Digite um e-mail válido, como voce@exemplo.com.';
-      err.hidden = false; email.classList.add('bad'); email.focus(); return;
+    nome.classList.remove('bad');
+    try {
+      var payload = { email: email.value, password: senha.value };
+      if (isRegistering) payload.name = nome.value;
+      var response = await fetch(isRegistering ? '/api/auth/register' : '/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      var result = await response.json();
+
+      if (!response.ok) {
+        email.classList.add('bad');
+        senha.classList.add('bad');
+        if (isRegistering) nome.classList.add('bad');
+        toast(result.message || 'E-mail ou senha inválidos.', 'error');
+        return;
+      }
+
+      if (isRegistering) {
+        senha.value = '';
+        setAuthMode(false);
+        dlg.close();
+        toast('Usuário cadastrado com sucesso. Agora, faça login.', 'success');
+        return;
+      }
+
+      setLoggedIn(result.name || displayName(result.email));
+      senha.value = '';
+      dlg.close();
+      window.location.assign(result.role === 'ADMIN' ? '/adm' : NEW_REQUEST_URL);
+    } catch (error) {
+      toast('Não foi possível concluir a operação. Verifique a conexão e tente novamente.', 'error');
     }
-    if (pw.length < 6) {
-      err.textContent = 'A senha precisa ter pelo menos 6 caracteres.';
-      err.hidden = false; senha.classList.add('bad'); senha.focus(); return;
-    }
-    var name = em.split('@')[0].replace(/[._-]+/g, ' ');
-    name = name.charAt(0).toUpperCase() + name.slice(1);
-    saveUser(name); setLoggedIn(name); dlg.close(); form.reset();
-    toast('Você entrou. Agora é só abrir sua solicitação.');
-  });
-  [logoutBtn, logoutNav].forEach(function (b) {
-    b.addEventListener('click', function () { clearUser(); setLoggedOut(); nav.classList.remove('open'); toast('Você saiu da sua conta.'); });
   });
 
-  var saved = readUser(); if (saved) setLoggedIn(saved);
+  [logoutBtn, logoutNav].forEach(function (button) {
+    button.addEventListener('click', async function () {
+      try {
+        var response = await fetch('/api/auth/logout', { method: 'POST' });
+        if (!response.ok) {
+          throw new Error('Falha ao encerrar a sessão.');
+        }
+        setLoggedOut();
+        nav.classList.remove('open');
+        toast('Você saiu da sua conta.', 'success');
+      } catch (error) {
+        toast('Não foi possível encerrar a sessão. Tente novamente.', 'error');
+      }
+    });
+  });
+
+  fetch('/api/auth/session')
+    .then(function (response) {
+      if (!response.ok) throw new Error('Falha ao consultar sessão.');
+      return response.json();
+    })
+    .then(function (result) {
+      if (result.authenticated) setLoggedIn(result.name || displayName(result.email));
+      else setLoggedOut();
+    })
+    .catch(function () {
+      toast('Não foi possível verificar a sessão. Atualize a página.', 'error');
+    });
 })();

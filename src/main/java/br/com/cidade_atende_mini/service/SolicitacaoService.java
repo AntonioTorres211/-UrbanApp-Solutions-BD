@@ -3,23 +3,31 @@ package br.com.cidade_atende_mini.service;
 
 import br.com.cidade_atende_mini.dto.SolicitacaoDTO;
 import br.com.cidade_atende_mini.model.Solicitacao;
+import br.com.cidade_atende_mini.model.Usuario;
 import br.com.cidade_atende_mini.repository.SolicitacaoRepository;
-import br.com.cidade_atende_mini.model.Solicitacao;
+import br.com.cidade_atende_mini.repository.UsuarioRepository;
 import java.util.List;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SolicitacaoService {
 
     private final SolicitacaoRepository solicitacaoRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public SolicitacaoService(SolicitacaoRepository solicitacaoRepository) {
+    public SolicitacaoService(
+            SolicitacaoRepository solicitacaoRepository,
+            UsuarioRepository usuarioRepository) {
         this.solicitacaoRepository = solicitacaoRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
-    public void cadastrarSolicitacao(SolicitacaoDTO solicitacaoDTO) {
+    public void cadastrarSolicitacao(SolicitacaoDTO solicitacaoDTO, Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
         Solicitacao solicitacao = new Solicitacao();
 
@@ -32,13 +40,41 @@ public class SolicitacaoService {
         // Valores iniciais da solicitação
         solicitacao.setStatus("ABERTA");
         solicitacao.setDataAbertura(LocalDateTime.now());
+        solicitacao.setUsuario(usuario);
 
         // Persistência no banco de dados
         solicitacaoRepository.save(solicitacao);
     }
 
-    public List<Solicitacao> listarSolicitacoes() {
-    return solicitacaoRepository.findAll();
+    public List<Solicitacao> listarSolicitacoesDoUsuario(Long usuarioId) {
+        return solicitacaoRepository.findByUsuario_IdOrderByDataAberturaDesc(usuarioId);
+    }
+
+    public List<Solicitacao> listarSolicitacoesAbertas() {
+        return solicitacaoRepository.findByStatusIgnoreCase("ABERTA");
+    }
+
+    public List<Solicitacao> listarSolicitacoesFechadas() {
+        return solicitacaoRepository.findByStatusIn(List.of("FECHADA", "CONCLUIDA"));
+    }
+
+    public void fecharSolicitacao(Integer id) {
+        Solicitacao solicitacao = solicitacaoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        if (!"ABERTA".equalsIgnoreCase(solicitacao.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "A solicitação não está aberta.");
+        }
+
+        solicitacao.setStatus("FECHADA");
+        solicitacao.setDataFechadura(LocalDateTime.now());
+        solicitacaoRepository.save(solicitacao);
+    }
+
+    public void excluirSolicitacao(Integer id) {
+        if (!solicitacaoRepository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        solicitacaoRepository.deleteById(id);
     }
 
 }
