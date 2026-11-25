@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SolicitacaoService {
+    private static final int PRIORIDADE_MINIMA = 1;
+    private static final int PRIORIDADE_MAXIMA = 5;
 
     private final SolicitacaoRepository solicitacaoRepository;
     private final UsuarioRepository usuarioRepository;
@@ -26,11 +28,11 @@ public class SolicitacaoService {
     }
 
     public void cadastrarSolicitacao(SolicitacaoDTO solicitacaoDTO, Long usuarioId) {
-        
-        validarPrioridade(solicitacaoDTO.getPrioridade()); 
+
+        validarPrioridade(solicitacaoDTO.getPrioridade());
 
         Usuario usuario = usuarioRepository.findById(usuarioId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
         Solicitacao solicitacao = new Solicitacao();
 
@@ -50,12 +52,19 @@ public class SolicitacaoService {
     }
 
     private void validarPrioridade(Integer prioridade) {
-    if (prioridade == null || prioridade < 1 || prioridade > 5) {
-        throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "A prioridade deve ser um número inteiro de 1 a 5.");
+        if (!prioridadeValida(prioridade)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "A prioridade deve ser um número inteiro de "
+                            + PRIORIDADE_MINIMA + " a " + PRIORIDADE_MAXIMA + ".");
+        }
     }
-}
+
+    private boolean prioridadeValida(Integer prioridade) {
+        return prioridade != null
+                && prioridade >= PRIORIDADE_MINIMA
+                && prioridade <= PRIORIDADE_MAXIMA;
+    }
 
     public List<Solicitacao> listarSolicitacoesDoUsuario(Long usuarioId) {
         return solicitacaoRepository.findByUsuario_IdOrderByDataAberturaDesc(usuarioId);
