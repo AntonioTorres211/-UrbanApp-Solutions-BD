@@ -26,8 +26,11 @@ public class SolicitacaoService {
     }
 
     public void cadastrarSolicitacao(SolicitacaoDTO solicitacaoDTO, Long usuarioId) {
+        
+        validarPrioridade(solicitacaoDTO.getPrioridade()); 
+
         Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
 
         Solicitacao solicitacao = new Solicitacao();
 
@@ -45,6 +48,14 @@ public class SolicitacaoService {
         // Persistência no banco de dados
         solicitacaoRepository.save(solicitacao);
     }
+
+    private void validarPrioridade(Integer prioridade) {
+    if (prioridade == null || prioridade < 1 || prioridade > 5) {
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "A prioridade deve ser um número inteiro de 1 a 5.");
+    }
+}
 
     public List<Solicitacao> listarSolicitacoesDoUsuario(Long usuarioId) {
         return solicitacaoRepository.findByUsuario_IdOrderByDataAberturaDesc(usuarioId);
