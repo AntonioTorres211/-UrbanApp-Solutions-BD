@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SolicitacaoService {
     private static final int PRIORIDADE_MINIMA = 1;
-    private static final int PRIORIDADE_MAXIMA = 5;
+    private static final int PRIORIDADE_MAXIMA = 6;
 
     private final SolicitacaoRepository solicitacaoRepository;
     private final UsuarioRepository usuarioRepository;
