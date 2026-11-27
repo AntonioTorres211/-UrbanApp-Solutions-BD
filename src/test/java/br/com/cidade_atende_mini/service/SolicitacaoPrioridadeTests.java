@@ -95,7 +95,7 @@ class SolicitacaoPrioridadeTests {
                 () -> solicitacaoService.cadastrarSolicitacao(
                         solicitacaoComPrioridade(prioridade), autor.getId()));
 
-        assertEquals(401, erro.getStatusCode().value());
+        assertEquals(400, erro.getStatusCode().value());
         assertEquals(0, solicitacaoRepository.count(),
                 "Uma solicitação com prioridade inválida não pode ser salva.");
     }
