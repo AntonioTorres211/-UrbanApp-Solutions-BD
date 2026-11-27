@@ -70,6 +70,17 @@ class SolicitacaoAdminServiceTests {
     }
 
     @Test
+void naoPermiteFecharSolicitacaoQueJaEstaFechada() {
+    Solicitacao solicitacao = salvarSolicitacao("FECHADA");
+
+    ResponseStatusException erro = assertThrows(
+            ResponseStatusException.class,
+            () -> solicitacaoService.fecharSolicitacao(solicitacao.getId()));
+
+    assertEquals(409, erro.getStatusCode().value());
+}
+
+    @Test
     void excluiSolicitacaoExistenteERejeitaIdInexistente() {
         Solicitacao solicitacao = salvarSolicitacao("ABERTA");
         solicitacaoService.excluirSolicitacao(solicitacao.getId());
