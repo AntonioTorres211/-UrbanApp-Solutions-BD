@@ -81,9 +81,10 @@ public class SolicitacaoService {
     public void fecharSolicitacao(Integer id) {
         Solicitacao solicitacao = solicitacaoRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (!"ABERTA".equalsIgnoreCase(solicitacao.getStatus())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "A solicitação não está aberta.");
-        }
+        if (!"ABERTA".equalsIgnoreCase(solicitacao.getStatus())
+        && !"FECHADA".equalsIgnoreCase(solicitacao.getStatus())) {
+    throw new ResponseStatusException(HttpStatus.CONFLICT, "A solicitação não está aberta.");
+}
 
         solicitacao.setStatus("FECHADA");
         solicitacao.setDataFechadura(LocalDateTime.now());
